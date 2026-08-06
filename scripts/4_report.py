@@ -1,8 +1,3 @@
-"""Phase E -- methodology report. Disk only, no network.
-
-Reads the outputs of phases A-D and writes output/METHODOLOGY.md, printing
-the same content to the console.
-"""
 import csv
 from collections import Counter
 

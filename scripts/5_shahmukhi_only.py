@@ -1,11 +1,3 @@
-"""Follow-up -- Shahmukhi-only poet subset. Disk only, no network.
-
-Reads output/unmatched_shahmukhi.csv (already produced by Phase C+D) and
-projects it down to the columns useful for manual research: name_raw, url,
-page_layout, and poem_count (only meaningful for hub-layout pages). Does
-not look up, infer, or annotate anything about who these poets are --
-that is left entirely to manual research.
-"""
 import csv
 
 from common import OUTPUT

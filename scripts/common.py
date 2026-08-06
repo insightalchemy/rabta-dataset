@@ -1,8 +1,3 @@
-"""Shared constants and helpers for the Rabta scraping/analysis pipeline.
-
-Phases A and B (scripts 1 and 2) are the only ones that touch the network.
-Phases C, D, E (scripts 3 and 4) must read exclusively from disk.
-"""
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -37,8 +32,6 @@ def log_line(log_path, *fields):
 
 
 class RateLimiter:
-    """Enforces a minimum delay between successive network requests, process-wide."""
-
     def __init__(self, min_delay=MIN_DELAY_SECONDS):
         self.min_delay = min_delay
         self._last = None
@@ -53,11 +46,6 @@ class RateLimiter:
 
 
 def fetch_cached(url, cache_path, log_path, rate_limiter, max_retries=2):
-    """Fetch url, using cache_path if it already exists. Never re-fetches a cached page.
-
-    Returns (html_text_or_None, status) where status is one of:
-    'cached', 'fetched', 'failed'.
-    """
     cache_path = Path(cache_path)
     if cache_path.exists():
         log_line(log_path, url, "CACHED", cache_path.stat().st_size)

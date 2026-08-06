@@ -1,8 +1,7 @@
 # Rabta — Punjabi Cross-Script Dataset
 
 Research project on the Gurmukhi–Shahmukhi divide in Punjabi literature.
-Inventories which poets appear in which script on punjabi-kavita.com. See
-`CLAUDE.md` for the project's working constraints and conventions.
+Inventories which poets appear in which script on punjabi-kavita.com.
 
 ## Pipeline
 

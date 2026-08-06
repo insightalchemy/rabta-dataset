@@ -1,19 +1,3 @@
-"""Phase A -- fetch the two poet index pages and extract poet-link inventories.
-
-Selectors (narrowed after manual inspection of both pages, see METHODOLOGY.md):
-  Gurmukhi:  div.section > div.right   (24 alphabetical blocks, the full A-Z list)
-  Shahmukhi: the div.section > div.full block with the most li>a links
-             (identified by link count, not position -- the site does not mark
-             blocks with stable ids/classes, so "most links" is the only
-             non-guessing signal available; this is logged explicitly below)
-
-Everything else living in a sibling div.full/div.right block on either page
-is a different part of the homepage (Urdu poetry section, Hindi poetry
-section, themed anthology pages, or an external subdomain for short
-stories / Hindi poetry) and is excluded via an EXPLICIT list, not a guess.
-Any link outside the main block that is NOT on the explicit exclusion list
-is included and flagged ambiguous=True rather than silently dropped.
-"""
 import csv
 import sys
 from urllib.parse import urljoin
@@ -41,11 +25,6 @@ SHAHMUKHI_CACHE = DATA_RAW / "shahmukhi" / "PunjabiPoetryShahmukhi.php.html"
 
 MIN_POETS = 200
 MAX_POETS = 1000
-
-# Explicit exclusion list: every non-poet link found in a sibling div.full
-# block on either index page, with the reason it is out of scope for this
-# dataset. Built from direct inspection of the cached HTML (see chat/
-# METHODOLOGY.md), not from pattern-guessing.
 
 GURMUKHI_EXCLUSIONS = {}
 for href in [
@@ -87,9 +66,6 @@ for href in [
     GURMUKHI_EXCLUSIONS[href] = "hindi_poetry_section_poet"
 
 GURMUKHI_EXCLUSIONS["Translations.php"] = "translations_page"
-# block 2 (punjabikahani short-story subdomain) and block 6 (hindi-kavita.com)
-# are handled generically below by host-based exclusion, not by this dict,
-# since they are full URLs rather than relative hrefs.
 
 SHAHMUKHI_EXCLUSIONS = {}
 for href in [
@@ -127,8 +103,6 @@ def external_reason(href):
 
 
 def extract_gurmukhi(soup):
-    """Main list = div.section > div.right (direct child), the only container
-    on this page holding the alphabetical A-Z Punjabi poet list."""
     anchors = soup.select("div.section > div.right li a[href$='.php']")
     main_entries = []
     seen = set()
@@ -139,9 +113,6 @@ def extract_gurmukhi(soup):
         seen.add(href)
         main_entries.append((a.get_text(strip=True), href))
 
-    # Everything in a sibling div.full block is a different section of the
-    # homepage. Classify via the explicit exclusion list; anything not on
-    # that list is included and flagged ambiguous.
     other_anchors = soup.select("div.section > div.full li a[href$='.php']")
     ambiguous_entries = []
     excluded = []
@@ -162,10 +133,6 @@ def extract_gurmukhi(soup):
 
 
 def extract_shahmukhi(soup):
-    """No stable id/class distinguishes the main A-Z list from sibling
-    div.full blocks on this page, so the main block is identified as the
-    one with the most li>a links -- a data-driven signal, not a hardcoded
-    position. This is logged explicitly so the choice is auditable."""
     blocks = soup.select("div.section > div.full")
     sizes = [len(b.select("li a[href$='.php']")) for b in blocks]
     main_idx = sizes.index(max(sizes))
@@ -290,7 +257,6 @@ def main():
 
     print(f"Wrote {EXCLUDED_LOG}")
 
-    # Encoding sanity check: read back rows and check for non-ASCII survival.
     for path in [DATA_PROCESSED / "poets_gurmukhi.csv", DATA_PROCESSED / "poets_shahmukhi.csv"]:
         with open(path, encoding="utf-8") as f:
             reader = csv.DictReader(f)

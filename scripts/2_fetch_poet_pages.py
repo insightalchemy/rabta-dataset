@@ -1,10 +1,3 @@
-"""Phase B -- fetch every poet page listed in poets_gurmukhi.csv / poets_shahmukhi.csv.
-
-Reads the index CSVs produced by Phase A (disk only for the list of targets).
-Fetches each poet page over the network, one at a time, 3s minimum delay,
-caches to data/raw/{script}/{href}.html, and is resumable: anything already
-cached is skipped without a network request.
-"""
 import csv
 import sys
 

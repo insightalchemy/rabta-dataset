@@ -1,24 +1,3 @@
-"""Phase C + D -- cross-script matching and page-layout/poem analysis. Disk only, no network.
-
-Phase C: pair Gurmukhi and Shahmukhi poet pages by filename convention only
-(never by name similarity). Three methods tried in order per Gurmukhi entry:
-  1. exact_nohyphen: gurmukhi_stem + "Shahmukhi.php"
-  2. exact_hyphen:   gurmukhi_stem + "-Shahmukhi.php"
-  3. normalized:     strip all hyphens + lowercase both sides, then compare
-                      gurmukhi_stem_normalized + "shahmukhi" to
-                      shahmukhi_stem_normalized
-
-Phase D: the site uses two different poet-page layouts, discovered while
-building this script:
-  - "hub" pages link out to separate sub-pages, one per poem/collection.
-  - "inline" pages embed the poem(s) directly as text on the page itself,
-    with no outbound poem links at all.
-A link-counting poem_count is only meaningful for "hub" pages. Every page
-is classified as hub/inline/missing (missing = no cached HTML, e.g. the one
-page that 500'd during Phase B); poem_count is populated ONLY for hub pages
-and left blank otherwise -- never reported as 0 for an inline page, since
-inline pages plainly do contain poems, just not as countable links.
-"""
 import csv
 from pathlib import Path
 from urllib.parse import urlparse
@@ -37,18 +16,6 @@ SHAHMUKHI_NAV_HREFS = {
     "indexShahmukhi.php", "PunjabiPoetryShahmukhi.php", "PunjabiSufiPoetryShahmukhi.php",
     "HindiPoetryShahmukhi.php", "TranslationsShahmukhi.php", "pkcontactus.php",
 }
-
-PAGE_LAYOUT_NOTES = (
-    "page_layout classifies each cached poet page as: "
-    "'hub' (the page's only poem-related content is a set of outbound links to "
-    "separate sub-pages, one per poem/collection -- poem_count is the number of "
-    "such distinct links after excluding site nav and the cross-script link), "
-    "'inline' (the page has no such outbound links; poems are embedded directly "
-    "as text on the page itself -- poem_count is left blank, NOT zero, because "
-    "the page demonstrably contains poems that simply aren't discretely countable "
-    "via links), or 'missing' (no cached HTML for this page, e.g. a server error "
-    "during fetch)."
-)
 
 
 def normalize_href_for_page(href, base_host="punjabi-kavita.com"):
@@ -80,7 +47,6 @@ def count_content_links(html_path, script):
 
 
 def classify_page(script, href):
-    """Returns (page_layout, poem_count) where poem_count is None unless hub."""
     html_path = DATA_RAW / script / href
     if not html_path.exists():
         return "missing", None
@@ -108,7 +74,6 @@ def main():
     g_rows = load_rows("poets_gurmukhi.csv")
     s_rows = load_rows("poets_shahmukhi.csv")
 
-    # Classify every page once, up front, for both scripts.
     classification = {}
     for script, rows in [("gurmukhi", g_rows), ("shahmukhi", s_rows)]:
         for r in rows:
@@ -164,10 +129,6 @@ def main():
         if method == "normalized":
             s_stem = stem_of(match_href)
             norm_s = normalize_stem(s_stem)
-            # Independent re-verification, not a re-use of the matching decision:
-            # strip the trailing "shahmukhi" from norm_s and compare directly to
-            # norm_g. Anything other than an exact match here means the two stems
-            # differ by more than hyphenation alone.
             suspicious = not (norm_s.endswith("shahmukhi") and norm_s[: -len("shahmukhi")] == norm_g)
             normalized_audit_rows.append({
                 "gurmukhi_stem": g_stem,
@@ -207,7 +168,6 @@ def main():
 
     unmatched_shahmukhi = [s for s in s_rows if s["href"] not in matched_shahmukhi_hrefs]
 
-    # --- write poet_pairs.csv ---
     pairs_path = OUTPUT / "poet_pairs.csv"
     with open(pairs_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=[
@@ -242,7 +202,6 @@ def main():
     write_unmatched(unmatched_g_path, unmatched_gurmukhi, "gurmukhi")
     write_unmatched(unmatched_s_path, unmatched_shahmukhi, "shahmukhi")
 
-    # --- match_audit.csv ---
     audit_path = OUTPUT / "match_audit.csv"
     with open(audit_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=[
@@ -253,7 +212,6 @@ def main():
         writer.writerows(normalized_audit_rows)
     suspicious_rows = [r for r in normalized_audit_rows if r["suspicious"]]
 
-    # --- hub/inline/missing breakdown per script ---
     def breakdown(script, rows):
         counts = {"hub": 0, "inline": 0, "missing": 0}
         for r in rows:
@@ -272,7 +230,6 @@ def main():
     g_hub_pct = pct(g_breakdown["hub"], g_total)
     s_hub_pct = pct(s_breakdown["hub"], s_total)
 
-    # --- cross-tab: page_layout x both_scripts, per script ---
     def cross_tab(script, rows, matched_hrefs):
         table = {"hub": {True: 0, False: 0}, "inline": {True: 0, False: 0}, "missing": {True: 0, False: 0}}
         for r in rows:
@@ -284,7 +241,6 @@ def main():
     g_cross = cross_tab("gurmukhi", g_rows, matched_gurmukhi_hrefs)
     s_cross = cross_tab("shahmukhi", s_rows, matched_shahmukhi_hrefs)
 
-    # --- console report ---
     print(f"Matching complete. method_counts={method_counts}")
     print(f"Pairs matched: {len(pairs)}")
     print(f"Unmatched Gurmukhi: {len(unmatched_gurmukhi)}, Unmatched Shahmukhi: {len(unmatched_shahmukhi)}")
