@@ -460,3 +460,39 @@ work, not resolved here:
 - **Counts reflect site structure at time of scrape** (2026-08-06T23:07:13+00:00). The
   site has no version history available to this pipeline; a re-run at a
   later date may produce different counts if the site is edited.
+
+## Presence vs. coverage depth
+
+**This section was corrected on 2026-08-07T00:40:52+00:00 -- see output/CORRECTION.md for
+the full account. The version of this section published previously
+understated Sharaf's Shahmukhi content by roughly 26x due to a link-
+detection bug that also affected the "under 500 words" figures below; see
+the correction notice before relying on any number in this section.**
+
+The matched-pair figures in this dataset record whether a poet has a page
+in each script. They do not measure how much of that poet's work appears
+on each side, and "appears in both scripts" should be read as nominal
+presence, not equivalent coverage -- that qualification still holds. What
+changed is the evidence for it.
+
+Corrected case study: Babu Firoz Din Sharaf has 104,577 words across ten
+Gurmukhi sub-pages against 6,739 words across a Shahmukhi landing page
+plus one sub-page (ratio 0.0644). The previously published figures --
+"approximately 350 works... against a single Shahmukhi page of 233 words"
+-- were incomplete: a Gurmukhi sub-page and the entire Shahmukhi sub-page
+had not been fetched due to a link-detection bug (fragment-suffixed hrefs
+like `Foo.php#Bar` were not matched). Sharaf's Shahmukhi page does contain
+substantial content (24 full poems, not a title-only stub); the divergence
+from the Gurmukhi side is still large, just roughly 26x smaller than
+previously stated.
+
+The 59.7% under 500 words / 84.1% under 1000 words figures for the full
+227-page Shahmukhi corpus are numerically unchanged on re-verification
+(the underlying text extraction was not the bug), but their
+interpretation was wrong: of the 135 pages under 500 words, 105 (78%) are
+now known to be pages misclassified as short-and-complete when they are
+actually hub pages linking to unfetched sub-pages. Only 30 pages (22% of
+the under-500 group) are confirmed genuinely short. 1,926 sub-pages
+(1,622 Gurmukhi-side, 304 Shahmukhi-side) remain unfetched; word counts
+and layout for the 428 poet pages they belong to should be treated as
+undetermined, not short, until that fetch happens.

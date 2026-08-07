@@ -1,6 +1,7 @@
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 
 import requests
 
@@ -9,6 +10,49 @@ USER_AGENT = f"Rabta Research Project (contact: {CONTACT_EMAIL})"
 MIN_DELAY_SECONDS = 3.0
 BASE_URL = "https://www.punjabi-kavita.com/"
 REQUEST_TIMEOUT = 20
+
+GURMUKHI_NAV_HREFS = {
+    "PunjabiPoetry.php", "Punjabi-Sufi-Poetry.php", "Urdu-Poetry.php",
+    "Hindi-Poetry.php", "Translations.php", "pkcontactus.php",
+}
+SHAHMUKHI_NAV_HREFS = {
+    "indexShahmukhi.php", "PunjabiPoetryShahmukhi.php", "PunjabiSufiPoetryShahmukhi.php",
+    "HindiPoetryShahmukhi.php", "TranslationsShahmukhi.php", "pkcontactus.php",
+}
+
+
+def normalize_href(href, base_host="punjabi-kavita.com"):
+    href = href.split("#", 1)[0]
+    if href.startswith("http://") or href.startswith("https://"):
+        parsed = urlparse(href)
+        host = parsed.netloc.lower().replace("www.", "")
+        if host != base_host:
+            return None
+        href = parsed.path
+    href = href.lstrip("/")
+    if not href.endswith(".php"):
+        return None
+    return href
+
+
+def extract_content_links(soup, script, current_href):
+    """Every <a href> pointing to another .php page, stripped of any #fragment,
+    excluding site nav, self-page anchors, and (for gurmukhi pages) the
+    cross-script link. Matches hrefs like 'Foo.php#Bar', not just 'Foo.php'."""
+    nav = GURMUKHI_NAV_HREFS if script == "gurmukhi" else SHAHMUKHI_NAV_HREFS
+    seen = set()
+    for a in soup.find_all("a", href=True):
+        norm = normalize_href(a["href"])
+        if norm is None:
+            continue
+        if norm in nav:
+            continue
+        if norm == current_href:
+            continue
+        if script == "gurmukhi" and norm.endswith("Shahmukhi.php"):
+            continue
+        seen.add(norm)
+    return seen
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_RAW = ROOT / "data" / "raw"

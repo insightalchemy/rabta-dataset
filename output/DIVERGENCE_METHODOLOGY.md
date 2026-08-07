@@ -1,5 +1,24 @@
 # Divergence Metrics -- Methodology
 
+**CORRECTED (see output/CORRECTION.md).** A link-detection bug caused
+fragment-suffixed hrefs (`Foo.php#Bar`) to be invisible to this pipeline,
+so many pages were misclassified "inline" when they are actually "hub"
+pages linking to unfetched sub-pages. This affects several numbers below:
+the Sharaf like-for-like ratio reported later in this document as 0.0025
+is wrong -- the corrected figure, with all pages actually fetched, is
+**0.0644** (Gurmukhi 104,577 words across 10 sub-pages vs. Shahmukhi 6,739
+words across a landing page + 1 sub-page). The 115-pair "inline/inline"
+subset used throughout this document is also wrong -- 38 of those 115
+pairs are actually hub on at least one side; the genuinely comparable
+subset is **77 pairs**, and within it the "42 divergent pairs / 33
+Gurmukhi-longer / 9 Shahmukhi-longer" split reported later is superseded
+by a corrected **20 divergent pairs, all 20 Gurmukhi-longer, 0
+Shahmukhi-longer** (output/divergence_inline_only_corrected.csv). See
+output/CORRECTION.md for the full account, root cause, and what remains
+unfetched (1,926 sub-pages). The text below is left as originally
+published, for the audit trail, and should be read only in light of this
+notice.
+
 ## Research question
 
 Are the Shahmukhi pages on punjabi-kavita.com transliterations of the
@@ -267,14 +286,20 @@ resolved by re-analysis of already-cached data.
 
 ## Part 3 and Part 4: the Sharaf like-for-like case and the tightened inline finding
 
+**Note: this section reflects the corrected numbers after the link-
+detection bug described in output/CORRECTION.md was fixed. An earlier
+version of this section, based on incomplete data (a missing Gurmukhi
+sub-page and the entire missing Shahmukhi sub-page), reported a ratio of
+0.0025; that was wrong. See output/CORRECTION.md for the full account.**
+
 ### Part 3: Sharaf, like-for-like
 
-Sharaf's 9 Gurmukhi sub-pages (the pages his hub landing page links to,
-fetched specifically for this check -- see logs/subpage_fetch.log) were
-concatenated and compared against his Shahmukhi inline page as a genuinely
-like-for-like measurement, removing the hub/inline layout confound entirely.
+All of Sharaf's Gurmukhi sub-pages (10, discovered via the
+corrected fragment-aware link extractor -- see logs/subpage_fetch.log) and
+all of his Shahmukhi sub-pages were fetched and concatenated with each
+side's landing page, for a genuinely complete like-for-like measurement.
 
-Per-sub-page counts:
+Per-page counts (Gurmukhi):
 
 - AudioBabuFirozDinSharaf.php: 614 chars, 115 words, 2 headings, 0 paragraphs
 - Bhajanawali-Babu-Firoz-Din-Sharaf.php: 3300 chars, 716 words, 12 headings, 11 paragraphs
@@ -282,61 +307,55 @@ Per-sub-page counts:
 - JoganBabuFirozDinSharaf.php: 17705 chars, 3735 words, 32 headings, 31 paragraphs
 - Laalaan-Dian-Lariaan-Babu-Firoz-Din-Sharaf.php: 103936 chars, 20958 words, 45 headings, 71 paragraphs
 - NooriDarshanBabuFirozDinSharaf.php: 48345 chars, 10432 words, 36 headings, 27 paragraphs
+- NooriDarshanBabuFirozDinSharaf2.php: 58850 chars, 12412 words, 31 headings, 28 paragraphs
 - PoetryBabuFirozDinSharaf.php: 81812 chars, 17605 words, 81 headings, 80 paragraphs
 - Rubaaiyaan-Babu-Firoz-Din-Sharaf.php: 5878 chars, 1214 words, 41 headings, 40 paragraphs
 - SunehriKalianBabuFirozDinSharaf.php: 179790 chars, 36459 words, 105 headings, 104 paragraphs
 
-- Concatenated Gurmukhi total: 445912 chars, 92165 words
-- Shahmukhi inline page total: 1333 chars, 233 words
-- word_ratio (shahmukhi/gurmukhi): 0.0025
-- char_ratio (shahmukhi/gurmukhi): 0.0030
+- Concatenated Gurmukhi total: 504763 chars, 104577 words
+- Concatenated Shahmukhi total: 31408 chars, 6739 words
+- word_ratio (shahmukhi/gurmukhi): 0.0644
+- char_ratio (shahmukhi/gurmukhi): 0.0622
 
-Placed within the 115-pair inline/inline distribution (min=0.2804,
-median=1.0079,
-max=6.2030), Sharaf's ratio of
-0.0025 sits at the 0.0th
-percentile -- **far outside** the 0.8-1.25 band used throughout this study,
-and in fact below every one of the 115 inline/inline pairs. Once the layout
-confound is removed, Sharaf is not a borderline or typical case: his is the
-most extreme length disparity found anywhere in this dataset by two orders
-of magnitude.
+Placed within the 77-pair inline/inline distribution (the corrected
+subset, restricted to pairs confirmed to have zero outbound content links
+of any kind on either side -- min=0.2804,
+median=1.0096,
+max=1.1636), Sharaf's ratio of
+0.0644 sits at the 0.0th
+percentile -- still **outside** the 0.8-1.25 band used throughout this
+study, and still below every one of the 77 inline/inline pairs.
+Sharaf remains the most extreme divergence found in this dataset, though
+the corrected margin (roughly 4x beyond the next most extreme case) is far
+smaller than the incorrect 0.0025 figure implied.
 
 **Poem-level breakdown.** A structural marker is available and was used
 instead of reading either script: heading (`<h1>`-`<h4>`) and paragraph
 (`<p>`) tag counts, which do not require interpreting any text content.
 Gurmukhi sub-pages consistently pair one heading with one paragraph (a
 one-heading-one-poem convention, off by a small constant per page for the
-page's own title heading), totaling 356
-headings and 366 paragraphs
-across the 9 sub-pages -- consistent with roughly 350-360 individual poems.
-The Shahmukhi page, by the same mechanical measure, has only
-3 headings and 2
-paragraphs total -- matching its two bio paragraphs, not a set of poem
-bodies. The 24 short lines visible under a "Poetry Babu Firoz Din Sharaf"
-heading on the Shahmukhi page are plain text, not individually tagged
-paragraphs, and are not followed by verse content of any length.
-
-By this structural marker, the Shahmukhi page does not contain a number of
-poems comparable to the Gurmukhi side -- it contains a list of titles, not
-poem bodies. This is reported as a structural fact from tag counts, not a
-conclusion about why the two versions differ or what the title list
-represents; matching those titles against specific Gurmukhi poems would
-require transliteration, which is out of scope for this analysis.
+page's own title heading), totaling 387
+headings and 394 paragraphs
+across the 10 sub-pages -- consistent with roughly 350-360
+individual poems. The Shahmukhi side, by the same mechanical measure, has
+48 headings and 45
+paragraphs total across its landing page and sub-page combined -- the
+sub-page alone (`PoetryBabuFirozDinSharafShahmukhi.php`) contributes a
+substantial share of these, confirming it holds real poem bodies rather
+than another title list.
 
 ### Part 4: tightening the inline finding
 
-The 115-pair inline/inline subset is the only subset in this study where
-the comparison is like-for-like without a known confound (unlike Sharaf,
-these pairs did not require fetching additional sub-pages, since both
-sides already have poem text embedded directly on the cached page). Of
-these, 42 pairs (the same ones flagged high_divergence=True
-earlier) are the most interesting group so far.
+The 77-pair inline/inline subset (corrected) is the only subset in
+this study where the comparison is like-for-like without a known confound
+-- both sides confirmed to have zero outbound content links, including
+fragment-suffixed ones. Of these, 20 pairs (flagged
+high_divergence=True) are the most interesting group.
 
 | poet | gurmukhi_words | shahmukhi_words | ratio | longer side |
 |---|---|---|---|---|
 | Sultan Kharvi | 2350 | 659 | 0.2804 | gurmukhi |
 | Saleem Kashir | 2401 | 742 | 0.309 | gurmukhi |
-| Sandeep Kumar | 168 | 52 | 0.3095 | gurmukhi |
 | Jaswant Singh Wanta | 1310 | 418 | 0.3191 | gurmukhi |
 | Prof Ashiq Raheel | 1831 | 606 | 0.331 | gurmukhi |
 | Arif Abdul Mateen | 1847 | 638 | 0.3454 | gurmukhi |
@@ -344,46 +363,25 @@ earlier) are the most interesting group so far.
 | Ikram Majeed | 1557 | 651 | 0.4181 | gurmukhi |
 | Abdul Karim Qudsi | 1819 | 796 | 0.4376 | gurmukhi |
 | Prof Sharab | 1264 | 562 | 0.4446 | gurmukhi |
-| Sachal Sarmast | 1017 | 454 | 0.4464 | gurmukhi |
 | Aashiq Chaudhari/Lahore | 1275 | 598 | 0.469 | gurmukhi |
-| Alexander Pushkin | 342 | 162 | 0.4737 | gurmukhi |
 | Iqbal Rahat | 1321 | 641 | 0.4852 | gurmukhi |
 | Tanveer Bukhari | 2244 | 1096 | 0.4884 | gurmukhi |
 | Wasif Ali Wasif | 1025 | 526 | 0.5132 | gurmukhi |
 | Imran Saleem | 1251 | 677 | 0.5412 | gurmukhi |
-| Sant Rein | 1187 | 653 | 0.5501 | gurmukhi |
 | Gual Das | 387 | 217 | 0.5607 | gurmukhi |
 | Akbar Qazmi | 873 | 491 | 0.5624 | gurmukhi |
-| Lala Kirpa Sagar | 257 | 147 | 0.572 | gurmukhi |
-| Karnail Singh Paras | 372 | 216 | 0.5806 | gurmukhi |
 | Umar Ghani | 2040 | 1185 | 0.5809 | gurmukhi |
 | Sadhu Ishar Das Udasi | 1824 | 1062 | 0.5822 | gurmukhi |
-| Chanan Jethuwalia | 172 | 102 | 0.593 | gurmukhi |
 | Ghulam Mustafa Bismil | 1894 | 1140 | 0.6019 | gurmukhi |
-| Gurnam Singh Teer | 315 | 195 | 0.619 | gurmukhi |
-| Baba Najmi | 611 | 399 | 0.653 | gurmukhi |
-| Afzal Sahir | 347 | 251 | 0.7233 | gurmukhi |
-| Sant Wali Ram | 377 | 274 | 0.7268 | gurmukhi |
 | Fida Bukhari | 682 | 513 | 0.7522 | gurmukhi |
-| Subramanya Bharathi | 348 | 265 | 0.7615 | gurmukhi |
-| Habib Jalib | 310 | 245 | 0.7903 | gurmukhi |
-| Yamla Jatt | 304 | 389 | 1.2796 | shahmukhi |
-| Bishan Singh Upashak | 182 | 237 | 1.3022 | shahmukhi |
-| Surjit Rampuri | 126 | 168 | 1.3333 | shahmukhi |
-| Sidhu Dhandiwal | 199 | 395 | 1.9849 | shahmukhi |
-| Ahmed Saleem | 240 | 517 | 2.1542 | shahmukhi |
-| Karam Ali Shah | 147 | 602 | 4.0952 | shahmukhi |
-| Gurdit Singh Kundan | 111 | 577 | 5.1982 | shahmukhi |
-| Gurjant Takipur | 248 | 1496 | 6.0323 | shahmukhi |
-| Tariq Gujjar | 197 | 1222 | 6.203 | shahmukhi |
 
-Directional split: **33 of 42** (79%)
-have the Gurmukhi side longer; **9 of 42**
-(21%) have the Shahmukhi side
-longer. This directional imbalance is a structural fact worth recording:
-within the cleanest comparable subset in this dataset, when the two
-versions diverge in length, the Gurmukhi version is longer roughly four
-times as often as the Shahmukhi version is. Length alone cannot say why --
-a different source edition, partial content, or omitted material could all
-produce this pattern, and this analysis does not attempt to choose among
-them.
+Directional split: **20 of 20** (100%)
+have the Gurmukhi side longer; **0 of 20**
+(0%) have the Shahmukhi side
+longer -- none run the other direction.
+This directional imbalance is a structural fact worth recording: within
+the cleanest comparable subset in this dataset, divergence runs
+exclusively toward the
+Gurmukhi version being longer. Length alone cannot say why -- a different
+source edition, partial content, or omitted material could all produce
+this pattern, and this analysis does not attempt to choose among them.

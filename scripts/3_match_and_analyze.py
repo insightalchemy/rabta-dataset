@@ -1,56 +1,19 @@
 import csv
-from pathlib import Path
-from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
-from common import DATA_PROCESSED, DATA_RAW, LOGS, OUTPUT, log_line
+from common import DATA_PROCESSED, DATA_RAW, LOGS, OUTPUT, extract_content_links, log_line
 
 MATCH_LOG = LOGS / "match_and_analyze.log"
-
-GURMUKHI_NAV_HREFS = {
-    "PunjabiPoetry.php", "Punjabi-Sufi-Poetry.php", "Urdu-Poetry.php",
-    "Hindi-Poetry.php", "Translations.php", "pkcontactus.php",
-}
-SHAHMUKHI_NAV_HREFS = {
-    "indexShahmukhi.php", "PunjabiPoetryShahmukhi.php", "PunjabiSufiPoetryShahmukhi.php",
-    "HindiPoetryShahmukhi.php", "TranslationsShahmukhi.php", "pkcontactus.php",
-}
-
-
-def normalize_href_for_page(href, base_host="punjabi-kavita.com"):
-    if href.startswith("http://") or href.startswith("https://"):
-        parsed = urlparse(href)
-        host = parsed.netloc.lower().replace("www.", "")
-        if host != base_host:
-            return None
-        href = parsed.path
-    return href.lstrip("/")
-
-
-def count_content_links(html_path, script):
-    with open(html_path, encoding="utf-8") as f:
-        soup = BeautifulSoup(f.read(), "html.parser")
-    nav = GURMUKHI_NAV_HREFS if script == "gurmukhi" else SHAHMUKHI_NAV_HREFS
-    seen = set()
-    for a in soup.select("a[href$='.php']"):
-        href = a.get("href")
-        norm = normalize_href_for_page(href)
-        if norm is None:
-            continue
-        if norm in nav:
-            continue
-        if script == "gurmukhi" and norm.endswith("Shahmukhi.php"):
-            continue
-        seen.add(norm)
-    return len(seen)
 
 
 def classify_page(script, href):
     html_path = DATA_RAW / script / href
     if not html_path.exists():
         return "missing", None
-    n = count_content_links(html_path, script)
+    with open(html_path, encoding="utf-8") as f:
+        soup = BeautifulSoup(f.read(), "html.parser")
+    n = len(extract_content_links(soup, script, href))
     if n > 0:
         return "hub", n
     return "inline", None
