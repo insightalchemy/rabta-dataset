@@ -496,3 +496,124 @@ the under-500 group) are confirmed genuinely short. 1,926 sub-pages
 (1,622 Gurmukhi-side, 304 Shahmukhi-side) remain unfetched; word counts
 and layout for the 428 poet pages they belong to should be treated as
 undetermined, not short, until that fetch happens.
+
+## Full-scale corrected results (all sub-pages fetched)
+
+Generated: 2026-08-07T03:50:29+00:00
+
+**This supersedes the partial-coverage results elsewhere in this document.**
+Following the correction described in output/CORRECTION.md, all 1,926
+previously-missing sub-pages were fetched (1,922 succeeded, 4 failed --
+see logs/subpage_fetch_status.log). Word counts below are now the total
+content of each poet's page plus all of its direct sub-pages, on both
+sides, for both scripts -- not a landing-page-only or proxy measure.
+
+### 1. Pairs now properly comparable
+
+**210 of 211** pairs are comparable on a unified
+word-count basis (was 77 before this fetch). Not comparable:
+
+- Avtar Singh Pash: gurmukhi_words=34525, shahmukhi_words=n/a
+
+3 comparable pairs rely on a page with a known-incomplete
+sub-page set (one of the 4 sub-page fetch failures affects them directly):
+
+- Charan Singh Safri: gurmukhi_complete=False, shahmukhi_complete=True
+- Shaheed Bhagat Singh: gurmukhi_complete=True, shahmukhi_complete=False
+- Shiv Kumar Batalvi: gurmukhi_complete=True, shahmukhi_complete=False
+
+These are included in all statistics below but should be read as a lower
+bound on that side's true word count, not an exact figure.
+
+### 2 & 3. Word-ratio distribution (n=210)
+
+- min: 0.0060
+- Q1: 0.4373
+- median: 0.9285
+- Q3: 1.0098
+- max: 149.1096
+- outside 0.8-1.25: **92 / 210 (43.8%)**
+
+### 4. Directional split -- does 100% Gurmukhi-longer hold at full scale?
+
+**No. It breaks down.** Of 92 divergent pairs:
+- Gurmukhi longer: 87 (94.6%)
+- Shahmukhi longer: 5 (5.4%)
+
+The Shahmukhi-longer pairs, individually -- these are the most
+analytically interesting pairs in the dataset, exactly the cases the
+partial-coverage analysis could not see:
+
+- Ahsaan Bajwa: gurmukhi=2426, shahmukhi=8134, ratio=3.3528
+- Balvir Dhillon: gurmukhi=73, shahmukhi=10885, ratio=149.1096
+- Shah Muhammad: gurmukhi=5667, shahmukhi=11341, ratio=2.0012
+- Shiv Kumar Batalvi: gurmukhi=59978, shahmukhi=93727, ratio=1.5627 [Shahmukhi side has an incomplete sub-page set -- treat with extra caution]
+- Vidhata Singh Teer: gurmukhi=1867, shahmukhi=18962, ratio=10.1564
+
+### 5. Where Sharaf ranks now
+
+Sharaf's corrected ratio is **0.0639**, ranking **8
+of 210** (1 = most Gurmukhi-heavy). He is no longer the single
+most extreme case in the dataset -- 7 pairs now show a more
+extreme divergence than his, visible only because their sub-pages are now
+fetched. He remains a clear, real outlier, just not the most extreme one.
+
+### 6. 20 largest and 20 smallest divergences
+
+Largest (ranked by max(ratio, 1/ratio)):
+
+1. Kartar Singh Kalaswalia: gurmukhi=137249, shahmukhi=826, ratio=0.006
+2. Balvir Dhillon: gurmukhi=73, shahmukhi=10885, ratio=149.1096
+3. Rozy Singh: gurmukhi=9407, shahmukhi=74, ratio=0.0079
+4. Harvinder Singh Chandigarh: gurmukhi=25159, shahmukhi=325, ratio=0.0129
+5. Sughra Sadaf (Dr.): gurmukhi=6951, shahmukhi=205, ratio=0.0295
+6. Prof Mohan Singh: gurmukhi=58248, shahmukhi=2105, ratio=0.0361
+7. Harbhajan Singh Dr: gurmukhi=115016, shahmukhi=5408, ratio=0.047
+8. Miran Shah Jalandhari: gurmukhi=20657, shahmukhi=996, ratio=0.0482
+9. Babu Firoz Din Sharaf: gurmukhi=105463, shahmukhi=6739, ratio=0.0639
+10. Faiz Ahmed Faiz: gurmukhi=5339, shahmukhi=341, ratio=0.0639
+11. Rauf Sheikh: gurmukhi=13705, shahmukhi=940, ratio=0.0686
+12. Harinder Singh Mehboob: gurmukhi=120248, shahmukhi=9617, ratio=0.08
+13. Gurmukh Singh Musafir: gurmukhi=33963, shahmukhi=3103, ratio=0.0914
+14. Vidhata Singh Teer: gurmukhi=1867, shahmukhi=18962, ratio=10.1564
+15. Prof Puran Singh: gurmukhi=10269, shahmukhi=1027, ratio=0.1
+16. Jarnail Singh Arshi: gurmukhi=14478, shahmukhi=1450, ratio=0.1002
+17. Charan Singh Safri: gurmukhi=21091, shahmukhi=2406, ratio=0.1141 [incomplete data]
+18. Hazara Singh Gurdaspuri: gurmukhi=9838, shahmukhi=1139, ratio=0.1158
+19. Khwaja Ghulam Farid: gurmukhi=43464, shahmukhi=5245, ratio=0.1207
+20. Guru Arjan Dev Ji: gurmukhi=27501, shahmukhi=3712, ratio=0.135
+
+Smallest (ratio closest to 1.0):
+
+1. Muhammad Boota Gujrati: gurmukhi=2864, shahmukhi=2865, ratio=1.0003
+2. Sant Jai Dev: gurmukhi=15108, shahmukhi=15113, ratio=1.0003
+3. Kartar Singh Duggal: gurmukhi=1568, shahmukhi=1567, ratio=0.9994
+4. Fard Faqir: gurmukhi=5377, shahmukhi=5373, ratio=0.9993
+5. Kalidasa (Mahakavi): gurmukhi=12426, shahmukhi=12439, ratio=1.001
+6. Zubair Ahmad: gurmukhi=1438, shahmukhi=1440, ratio=1.0014
+7. Akhtar Kashmiri: gurmukhi=598, shahmukhi=597, ratio=0.9983
+8. Akhtar Hussain Akhtar: gurmukhi=561, shahmukhi=560, ratio=0.9982
+9. Aliya Bukhari Hala: gurmukhi=527, shahmukhi=528, ratio=1.0019
+10. Najabat: gurmukhi=6588, shahmukhi=6604, ratio=1.0024
+11. Fazal Shah: gurmukhi=18164, shahmukhi=18210, ratio=1.0025
+12. Kalidas Gujranwalia: gurmukhi=2364, shahmukhi=2370, ratio=1.0025
+13. Mian Mohd Bakhsh: gurmukhi=7576, shahmukhi=7557, ratio=0.9975
+14. Pir Muhammad: gurmukhi=4417, shahmukhi=4428, ratio=1.0025
+15. Abid Jafri: gurmukhi=1894, shahmukhi=1899, ratio=1.0026
+16. Anant Prakash Udasin: gurmukhi=1719, shahmukhi=1714, ratio=0.9971
+17. Barkat Ram Yuman: gurmukhi=3715, shahmukhi=3727, ratio=1.0032
+18. Saleem Dilawari: gurmukhi=853, shahmukhi=850, ratio=0.9965
+19. Irfan Sadiq: gurmukhi=536, shahmukhi=534, ratio=0.9963
+20. Sain Labhu Shah: gurmukhi=1658, shahmukhi=1665, ratio=1.0042
+
+### What this does and does not establish
+
+Word count is a proxy for content volume, not a measure of textual
+identity. A large or small ratio does not by itself indicate a different
+source edition, partial transcription, or any other specific cause --
+this analysis does not conclude why any pair diverges, at this scale or
+any other. The 323 further sub-pages discovered but not fetched (235
+Gurmukhi, 88 Shahmukhi -- linked from the newly-fetched sub-pages
+themselves) mean even these totals are not a final, exhaustive count for
+every hub-layout poet; they are the most complete figures available from
+this project to date, not a claim of completeness.
