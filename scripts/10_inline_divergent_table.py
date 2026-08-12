@@ -4,7 +4,7 @@ from common import OUTPUT
 
 
 def main():
-    with open(OUTPUT / "divergence_inline_only.csv", encoding="utf-8") as f:
+    with open(OUTPUT / "divergence_inline_only.csv", encoding="utf-8") as f: 
         rows = list(csv.DictReader(f))
 
     divergent = [r for r in rows if r["high_divergence"] == "True"]
